@@ -9,6 +9,7 @@ const defaultConfig = {
   enableSponsorBlockInteraction: true,
   enableSponsorBlockSelfPromo: true,
   enableSponsorBlockMusicOfftopic: true,
+  enablePreviewMute: false,
   hideLogo: false
 };
 
