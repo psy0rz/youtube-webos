@@ -14,7 +14,7 @@
 }
 
 .ytaf-ui-container :focus {
-  outline: 4px red solid;
+  outline: 4px #008080 solid;
 }
 
 .ytaf-ui-container h1 {
@@ -59,4 +59,39 @@
   margin: 0 0.5em;
   padding: 0 1em;
   line-height: 0;
+}
+
+/* Logo YouTube */
+.ytlr-logo-entity {
+  visibility: hidden;
+}
+
+/* Pendant une video (sans segments), la barre rouge */
+.ytlr-progress-bar__slider {
+  opacity: 0.40;
+}
+.ytlr-progress-bar__slider > .ytlr-progress-bar__played {
+  background-color: #008080;
+}
+
+/* Pendant une video (avec segments), la barre rouge */
+.ytlr-progress-bar__slider-base {
+  opacity: 0.40;
+}
+.ytlr-progress-bar__slider-base > .ytlr-multi-markers-player-bar-renderer__played-segment {
+  background-color: #008080;
+}
+.ytlr-multi-markers-player-bar-renderer__played-progress {
+  background-color: #008080;
+}
+
+/* Dans l'historique, les barres rouges */
+.ytlr-thumbnail-overlay-resume-playback-renderer__progress-watched {
+  opacity: 0.75;
+  background-color: #008080;
+}
+
+/* Les miniatures des videos (menu et sous video) */
+.ytlr-tile-header-renderer__thumbnail-container {
+  opacity: 0.50;
 }
