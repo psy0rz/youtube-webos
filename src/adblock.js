@@ -34,13 +34,14 @@ JSON.parse = function () {
               elm.shelfRenderer.content.horizontalListRenderer.items =
                 elm.shelfRenderer.content.horizontalListRenderer.items.filter(
                   (item) =>
-                    !item?.tileRenderer?.metadata?.tileMetadataRenderer
+                    item.tileRenderer.contentType &&
+                    (!item?.tileRenderer?.metadata?.tileMetadataRenderer
                       ?.lines ||
-                    !item?.tileRenderer?.metadata?.tileMetadataRenderer
-                      ?.lines[0]?.lineRenderer?.items ||
-                    item?.tileRenderer?.metadata?.tileMetadataRenderer?.lines[0]
-                      ?.lineRenderer?.items[0]?.lineItemRenderer?.badge
-                      ?.metadataBadgeRenderer?.style !== 'BADGE_STYLE_TYPE_AD'
+                      !item?.tileRenderer?.metadata?.tileMetadataRenderer
+                        ?.lines[0]?.lineRenderer?.items ||
+                      item?.tileRenderer?.metadata?.tileMetadataRenderer?.lines[0]
+                        ?.lineRenderer?.items[0]?.lineItemRenderer?.badge
+                        ?.metadataBadgeRenderer?.style !== 'BADGE_STYLE_TYPE_AD')
                 );
             }
 
