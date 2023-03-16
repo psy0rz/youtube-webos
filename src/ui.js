@@ -48,8 +48,9 @@ uiContainer.addEventListener(
 uiContainer.innerHTML = `
 <h1>webOS YouTube Extended</h1>
 <label for="__notifications"><input type="checkbox" id="__notifications" /> Show notification messages</label>
-<label for="__adblock"><input type="checkbox" id="__adblock" /> Enable AdBlocking</label>
+<label for="__hide_logo"><input type="checkbox" id="__hide_logo" /> Hide YouTube logo (recommended on OLEDs)</label>
 <label for="__previewMute"><input type="checkbox" id="__previewMute" /> Mute video previews</label>
+<label for="__adblock"><input type="checkbox" id="__adblock" /> Enable AdBlocking</label>
 <label for="__sponsorblock"><input type="checkbox" id="__sponsorblock" /> Enable SponsorBlock</label>
 <blockquote>
 <label for="__sponsorblock_sponsor"><input type="checkbox" id="__sponsorblock_sponsor" /> Skip Sponsor Segments</label>
@@ -60,7 +61,6 @@ uiContainer.innerHTML = `
 <label for="__sponsorblock_music_offtopic"><input type="checkbox" id="__sponsorblock_music_offtopic" /> Skip Music and Off-topic Segments</label>
 </blockquote>
 <div><small>Sponsor segments skipping - https://sponsor.ajay.app</small></div>
-<label for="__hide_logo"><input type="checkbox" id="__hide_logo" /> Hide YouTube logo (recommended on OLEDs)</label>
 `;
 
 document.querySelector('body').appendChild(uiContainer);
