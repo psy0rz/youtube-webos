@@ -153,9 +153,8 @@ class SponsorBlockHandler {
         color: 'blue',
         opacity: 0.7
       };
-      const transform = `translateX(${
-        (start / videoDuration) * 100.0
-      }%) scaleX(${(end - start) / videoDuration})`;
+      const transform = `translateX(${(start / videoDuration) * 100.0
+        }%) scaleX(${(end - start) / videoDuration})`;
       const elm = document.createElement('div');
       elm.classList.add('ytlr-progress-bar__played');
       elm.style['background'] = barType.color;
@@ -179,7 +178,7 @@ class SponsorBlockHandler {
     });
 
     this.sliderInterval = setInterval(() => {
-      this.slider = document.querySelector('.ytlr-progress-bar__slider');
+      this.slider = document.querySelector('.ytlr-progress-bar__slider, .ytlr-multi-markers-player-bar-renderer');
       if (this.slider) {
         clearInterval(this.sliderInterval);
         this.sliderInterval = null;
