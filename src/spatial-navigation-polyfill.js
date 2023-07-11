@@ -1,5 +1,5 @@
 //
-// https://raw.githubusercontent.com/WICG/spatial-navigation/183f0146b6741007e46fa64ab0950447defdf8af/polyfill/spatial-navigation-polyfill.js
+// https://raw.githubusercontent.com/WICG/spatial-navigation/main/polyfill/spatial-navigation-polyfill.js
 // License: MIT
 //
 
@@ -21,11 +21,11 @@
     return;
   }
 
-  const ARROW_KEY_CODE = {37: 'left', 38: 'up', 39: 'right', 40: 'down'};
+  const ARROW_KEY_CODE = { 37: 'left', 38: 'up', 39: 'right', 40: 'down' };
   const TAB_KEY_CODE = 9;
   let mapOfBoundRect = null;
   let startingPoint = null; // Saves spatial navigation starting point
-  let savedSearchOrigin = {element: null, rect: null};  // Saves previous search origin
+  let savedSearchOrigin = { element: null, rect: null };  // Saves previous search origin
   let searchOriginRect = null;  // Rect of current search origin
 
   /**
@@ -95,13 +95,14 @@
       }
 
       if (!currentKeyMode ||
-          (currentKeyMode === 'NONE') ||
-          ((currentKeyMode === 'SHIFTARROW') && !e.shiftKey) ||
-          ((currentKeyMode === 'ARROW') && e.shiftKey))
+        (currentKeyMode === 'NONE') ||
+        ((currentKeyMode === 'SHIFTARROW') && !e.shiftKey) ||
+        ((currentKeyMode === 'ARROW') && e.shiftKey) ||
+        (e.ctrlKey || e.metaKey || e.altKey))
         return;
 
       if (!e.defaultPrevented) {
-        let focusNavigableArrowKey = {left: true, up: true, right: true, down: true};
+        let focusNavigableArrowKey = { left: true, up: true, right: true, down: true };
 
         // Edge case (text input, area) : Don't move focus, just navigate cursor in text area
         if ((eventTarget.nodeName === 'INPUT') || eventTarget.nodeName === 'TEXTAREA') {
@@ -126,7 +127,7 @@
      * NOTE: Let UA set the spatial navigation starting point based on click
      */
     document.addEventListener('mouseup', (e) => {
-      startingPoint = {x: e.clientX, y: e.clientY};
+      startingPoint = { x: e.clientX, y: e.clientY };
     });
 
     /*
@@ -196,15 +197,15 @@
       let bestInsideCandidate = null;
 
       // 5-2
-      if ((document.activeElement === searchOrigin) || 
-          (document.activeElement === document.body) && (searchOrigin === document.documentElement)) {
+      if ((document.activeElement === searchOrigin) ||
+        (document.activeElement === document.body) && (searchOrigin === document.documentElement)) {
         if (getCSSSpatNavAction(eventTarget) === 'scroll') {
           if (scrollingController(eventTarget, dir)) return;
         } else if (getCSSSpatNavAction(eventTarget) === 'focus') {
-          bestInsideCandidate = eventTarget.spatialNavigationSearch(dir, {container: eventTarget, candidates: getSpatialNavigationCandidates(eventTarget, {mode: 'all'})});
+          bestInsideCandidate = eventTarget.spatialNavigationSearch(dir, { container: eventTarget, candidates: getSpatialNavigationCandidates(eventTarget, { mode: 'all' }) });
           if (focusingController(bestInsideCandidate, dir)) return;
         } else if (getCSSSpatNavAction(eventTarget) === 'auto') {
-          bestInsideCandidate = eventTarget.spatialNavigationSearch(dir, {container: eventTarget});
+          bestInsideCandidate = eventTarget.spatialNavigationSearch(dir, { container: eventTarget });
           if (focusingController(bestInsideCandidate, dir) || scrollingController(eventTarget, dir)) return;
         }
       } else {
@@ -219,7 +220,7 @@
     let parentContainer = (container.parentElement) ? container.getSpatialNavigationContainer() : null;
 
     // When the container is the viewport of a browsing context
-    if (!parentContainer && ( window.location !== window.parent.location)) {
+    if (!parentContainer && (window.location !== window.parent.location)) {
       parentContainer = window.parent.document.documentElement;
     }
 
@@ -247,7 +248,7 @@
       /*
        * [event] navbeforefocus : Fired before spatial or sequential navigation changes the focus.
        */
-      if (!createSpatNavEvents('beforefocus', bestCandidate, null, dir)) 
+      if (!createSpatNavEvents('beforefocus', bestCandidate, null, dir))
         return true;
 
       const container = bestCandidate.getSpatialNavigationContainer();
@@ -255,7 +256,7 @@
       if ((container !== window) && (getCSSSpatNavAction(container) === 'focus')) {
         bestCandidate.focus();
       } else {
-        bestCandidate.focus({preventScroll: true});
+        bestCandidate.focus({ preventScroll: true });
       }
 
       startingPoint = null;
@@ -300,7 +301,7 @@
    *                                          Default value is 'visible'.
    * @returns {sequence<Node>} candidate elements within the container
    */
-  function getSpatialNavigationCandidates (container, option = {mode: 'visible'}) {
+  function getSpatialNavigationCandidates(container, option = { mode: 'visible' }) {
     let candidates = [];
 
     if (container.childElementCount > 0) {
@@ -315,10 +316,10 @@
           candidates.push(elem);
 
           if (!isContainer(elem) && elem.childElementCount) {
-            candidates = candidates.concat(getSpatialNavigationCandidates(elem, {mode: 'all'}));
+            candidates = candidates.concat(getSpatialNavigationCandidates(elem, { mode: 'all' }));
           }
         } else if (elem.childElementCount) {
-          candidates = candidates.concat(getSpatialNavigationCandidates(elem, {mode: 'all'}));
+          candidates = candidates.concat(getSpatialNavigationCandidates(elem, { mode: 'all' }));
         }
       }
     }
@@ -335,7 +336,7 @@
    * @param container {Node} - The spatial navigation container
    * @returns {Node} The candidates for spatial navigation considering the directional information
    */
-  function getFilteredSpatialNavigationCandidates (element, dir, candidates, container) {
+  function getFilteredSpatialNavigationCandidates(element, dir, candidates, container) {
     const targetElement = element;
     // Removed below line due to a bug. (iframe body rect is sometime weird.)
     // const targetElement = (element.nodeName === 'IFRAME') ? element.contentDocument.body : element;
@@ -357,7 +358,7 @@
    * @param container {Node} - The spatial navigation container
    * @returns {Node} The best candidate which will gain the focus
    */
-  function spatialNavigationSearch (dir, args) {
+  function spatialNavigationSearch(dir, args) {
     const targetElement = this;
     let internalCandidates = [];
     let externalCandidates = [];
@@ -374,9 +375,9 @@
     if (args.container && (defaultContainer.contains(args.container))) {
       defaultCandidates = defaultCandidates.concat(getSpatialNavigationCandidates(container));
     }
-    const candidates = (args.candidates && args.candidates.length > 0) ? 
-                          args.candidates.filter((candidate) => container.contains(candidate)) : 
-                          defaultCandidates.filter((candidate) => container.contains(candidate) && (container !== candidate));
+    const candidates = (args.candidates && args.candidates.length > 0) ?
+      args.candidates.filter((candidate) => container.contains(candidate)) :
+      defaultCandidates.filter((candidate) => container.contains(candidate) && (container !== candidate));
 
     // Find the best candidate
     // 5
@@ -395,7 +396,7 @@
       let fullyOverlapped = insideOverlappedCandidates.filter(candidate => !internalCandidates.includes(candidate));
       let overlappedContainer = candidates.filter(candidate => (isContainer(candidate) && isEntirelyVisible(targetElement, candidate)));
       let overlappedByParent = overlappedContainer.map((elm) => elm.focusableAreas()).flat().filter(candidate => candidate !== targetElement);
-      
+
       internalCandidates = internalCandidates.concat(fullyOverlapped).filter((candidate) => container.contains(candidate));
       externalCandidates = externalCandidates.concat(overlappedByParent).filter((candidate) => container.contains(candidate));
 
@@ -403,7 +404,7 @@
       if (externalCandidates.length > 0) {
         externalCandidates = getFilteredSpatialNavigationCandidates(targetElement, dir, externalCandidates, container);
       }
-      
+
       // If there isn't search origin element but search orgin rect exist  (search origin isn't in the layout case)
       if (searchOriginRect) {
         bestTarget = selectBestCandidate(targetElement, getFilteredSpatialNavigationCandidates(targetElement, dir, internalCandidates, container), dir);
@@ -417,15 +418,15 @@
 
       if (bestTarget && isDelegableContainer(bestTarget)) {
         // if best target is delegable container, then find descendants candidate inside delegable container.
-        const innerTarget = getSpatialNavigationCandidates(bestTarget, {mode: 'all'});
-        const descendantsBest = innerTarget.length > 0 ? targetElement.spatialNavigationSearch(dir, {candidates: innerTarget, container: bestTarget}) : null;
+        const innerTarget = getSpatialNavigationCandidates(bestTarget, { mode: 'all' });
+        const descendantsBest = innerTarget.length > 0 ? targetElement.spatialNavigationSearch(dir, { candidates: innerTarget, container: bestTarget }) : null;
         if (descendantsBest) {
           bestTarget = descendantsBest;
         } else if (!isFocusable(bestTarget)) {
           // if there is no target inside bestTarget and delegable container is not focusable,
           // then try to find another best target without curren best target.
           candidates.splice(candidates.indexOf(bestTarget), 1);
-          bestTarget = candidates.length ? targetElement.spatialNavigationSearch(dir, {candidates: candidates, container: container}) : null;
+          bestTarget = candidates.length ? targetElement.spatialNavigationSearch(dir, { candidates: candidates, container: container }) : null;
         }
       }
       return bestTarget;
@@ -470,7 +471,7 @@
         const candidateRect = getBoundingClientRect(candidate);
         return container.contains(candidate) &&
           ((currentElm.contains(candidate) && isInside(eventTargetRect, candidateRect) && candidate !== currentElm) ||
-          isOutside(candidateRect, eventTargetRect, dir));
+            isOutside(candidateRect, eventTargetRect, dir));
       });
     } else {
       return candidates.filter(candidate => {
@@ -501,16 +502,16 @@
     let alignedCandidates;
 
     switch (spatialNavigationFunction) {
-    case 'grid':
-      alignedCandidates = candidates.filter(elm => isAligned(currentTargetRect, getBoundingClientRect(elm), dir));
-      if (alignedCandidates.length > 0) {
-        candidates = alignedCandidates;
-      }
-      distanceFunction = getAbsoluteDistance;
-      break;
-    default:
-      distanceFunction = getDistance;
-      break;
+      case 'grid':
+        alignedCandidates = candidates.filter(elm => isAligned(currentTargetRect, getBoundingClientRect(elm), dir));
+        if (alignedCandidates.length > 0) {
+          candidates = alignedCandidates;
+        }
+        distanceFunction = getAbsoluteDistance;
+        break;
+      default:
+        distanceFunction = getDistance;
+        break;
     }
     return getClosestElement(currentElm, candidates, dir, distanceFunction);
   }
@@ -542,7 +543,7 @@
    */
   function getClosestElement(currentElm, candidates, dir, distanceFunction) {
     let eventTargetRect = null;
-    if (( window.location !== window.parent.location ) && (currentElm.nodeName === 'BODY' || currentElm.nodeName === 'HTML')) {
+    if ((window.location !== window.parent.location) && (currentElm.nodeName === 'BODY' || currentElm.nodeName === 'HTML')) {
       // If the eventTarget is iframe, then get rect of it based on its containing document
       // Set the iframe's position as (0,0) because the rects of elements inside the iframe don't know the real iframe's position.
       eventTargetRect = window.frameElement.getBoundingClientRect();
@@ -625,7 +626,7 @@
     if (scrollContainer === document || scrollContainer === document.documentElement) {
       scrollContainer = window;
     }
-  
+
     return scrollContainer;
   }
 
@@ -637,7 +638,7 @@
    *                                          Default value is 'visible'.
    * @returns {sequence<Node>} All focusable elements or only visible focusable elements within the container
    */
-  function focusableAreas(option = {mode: 'visible'}) {
+  function focusableAreas(option = { mode: 'visible' }) {
     const container = this.parentElement ? this : document.body;
     const focusables = Array.prototype.filter.call(container.getElementsByTagName('*'), isFocusable);
     return (option.mode === 'all') ? focusables : focusables.filter(isVisible);
@@ -657,7 +658,7 @@
         causedTarget: currentElement,
         dir: direction
       };
-      const triggeredEvent = new CustomEvent('nav' + eventType, {bubbles: true, cancelable: true, detail: data});
+      const triggeredEvent = new CustomEvent('nav' + eventType, { bubbles: true, cancelable: true, detail: data });
       return containerElement.dispatchEvent(triggeredEvent);
     }
   }
@@ -670,8 +671,7 @@
    * @returns {string} The value of the css custom property
    */
   function readCssVar(element, varName) {
-    // 20210606 fix getPropertyValue returning null ~inf
-    return (element.style.getPropertyValue(`--${varName}`) || '').trim();
+    return element.style.getPropertyValue(`--${varName}`).trim();
   }
 
   /**
@@ -704,7 +704,7 @@
    * @param dir {SpatialNavigationDirection} - The directional information for the spatial navigation (e.g. LRUD)
    */
   function navigateChain(eventTarget, container, parentContainer, dir, option) {
-    let currentOption = {candidates: getSpatialNavigationCandidates(container, {mode: option}), container};
+    let currentOption = { candidates: getSpatialNavigationCandidates(container, { mode: option }), container };
 
     while (parentContainer) {
       if (focusingController(eventTarget.spatialNavigationSearch(dir, currentOption), dir)) {
@@ -716,15 +716,15 @@
 
           // find the container
           if (container === document || container === document.documentElement) {
-            if ( window.location !== window.parent.location ) {
+            if (window.location !== window.parent.location) {
               // The page is in an iframe. eventTarget needs to be reset because the position of the element in the iframe
               eventTarget = window.frameElement;
-              container = eventTarget.ownerDocument.documentElement;              
+              container = eventTarget.ownerDocument.documentElement;
             }
           } else {
             container = parentContainer;
           }
-          currentOption = {candidates: getSpatialNavigationCandidates(container, {mode: option}), container};
+          currentOption = { candidates: getSpatialNavigationCandidates(container, { mode: option }), container };
           let nextContainer = container.getSpatialNavigationContainer();
 
           if (nextContainer !== container) {
@@ -736,7 +736,7 @@
       }
     }
 
-    currentOption = {candidates: getSpatialNavigationCandidates(container, {mode: option}), container};
+    currentOption = { candidates: getSpatialNavigationCandidates(container, { mode: option }), container };
 
     // Behavior after 'navnotarget' - Getting out from the current spatnav container
     if ((!parentContainer && container) && focusingController(eventTarget.spatialNavigationSearch(dir, currentOption), dir)) return;
@@ -775,7 +775,7 @@
       ((getBoundingClientRect(savedSearchOrigin.element).height === 0) || (getBoundingClientRect(savedSearchOrigin.element).width === 0))) {
       searchOriginRect = savedSearchOrigin.rect;
     }
-    
+
     if (!isVisibleInScroller(searchOrigin)) {
       const scroller = getScrollContainer(searchOrigin);
       if (scroller && ((scroller === window) || (getCSSSpatNavAction(scroller) === 'auto')))
@@ -796,10 +796,10 @@
   function moveScroll(element, dir, offset = 0) {
     if (element) {
       switch (dir) {
-      case 'left': element.scrollLeft -= (40 + offset); break;
-      case 'right': element.scrollLeft += (40 + offset); break;
-      case 'up': element.scrollTop -= (40 + offset); break;
-      case 'down': element.scrollTop += (40 + offset); break;
+        case 'left': element.scrollLeft -= (40 + offset); break;
+        case 'right': element.scrollLeft += (40 + offset); break;
+        case 'up': element.scrollTop -= (40 + offset); break;
+        case 'down': element.scrollTop += (40 + offset); break;
       }
     }
   }
@@ -812,9 +812,9 @@
    */
   function isContainer(element) {
     return (!element.parentElement) ||
-            (element.nodeName === 'IFRAME') ||
-            (isScrollContainer(element)) ||
-            (isCSSSpatNavContain(element));
+      (element.nodeName === 'IFRAME') ||
+      (isScrollContainer(element)) ||
+      (isCSSSpatNavContain(element));
   }
 
   /**
@@ -841,8 +841,8 @@
     const overflowY = elementStyle.getPropertyValue('overflow-y');
 
     return ((overflowX !== 'visible' && overflowX !== 'clip' && isOverflow(element, 'left')) ||
-          (overflowY !== 'visible' && overflowY !== 'clip' && isOverflow(element, 'down'))) ?
-           true : false;
+      (overflowY !== 'visible' && overflowY !== 'clip' && isOverflow(element, 'down'))) ?
+      true : false;
   }
 
   /**
@@ -864,20 +864,20 @@
           const overflowY = elementStyle.getPropertyValue('overflow-y');
 
           switch (dir) {
-          case 'left':
+            case 'left':
             /* falls through */
-          case 'right':
-            return (overflowX !== 'visible' && overflowX !== 'clip' && overflowX !== 'hidden');
-          case 'up':
+            case 'right':
+              return (overflowX !== 'visible' && overflowX !== 'clip' && overflowX !== 'hidden');
+            case 'up':
             /* falls through */
-          case 'down':
-            return (overflowY !== 'visible' && overflowY !== 'clip' && overflowY !== 'hidden');
+            case 'down':
+              return (overflowY !== 'visible' && overflowY !== 'clip' && overflowY !== 'hidden');
           }
         }
         return false;
       } else { // parameter: element
         return (element.nodeName === 'HTML' || element.nodeName === 'BODY') ||
-                (isScrollContainer(element) && isOverflow(element));
+          (isScrollContainer(element) && isOverflow(element));
       }
     }
   }
@@ -893,14 +893,14 @@
     if (element && typeof element === 'object') {
       if (dir && typeof dir === 'string') { // parameter: element, dir
         switch (dir) {
-        case 'left':
+          case 'left':
           /* falls through */
-        case 'right':
-          return (element.scrollWidth > element.clientWidth);
-        case 'up':
+          case 'right':
+            return (element.scrollWidth > element.clientWidth);
+          case 'up':
           /* falls through */
-        case 'down':
-          return (element.scrollHeight > element.clientHeight);
+          case 'down':
+            return (element.scrollHeight > element.clientHeight);
         }
       } else { // parameter: element
         return (element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight);
@@ -919,18 +919,18 @@
   function isHTMLScrollBoundary(element, dir) {
     let result = false;
     switch (dir) {
-    case 'left':
-      result = element.scrollLeft === 0;
-      break;
-    case 'right':
-      result = (element.scrollWidth - element.scrollLeft - element.clientWidth) === 0;
-      break;
-    case 'up':
-      result = element.scrollTop === 0;
-      break;
-    case 'down':
-      result = (element.scrollHeight - element.scrollTop - element.clientHeight) === 0;
-      break;
+      case 'left':
+        result = element.scrollLeft === 0;
+        break;
+      case 'right':
+        result = (element.scrollWidth - element.scrollLeft - element.clientWidth) === 0;
+        break;
+      case 'up':
+        result = element.scrollTop === 0;
+        break;
+      case 'down':
+        result = (element.scrollHeight - element.scrollTop - element.clientHeight) === 0;
+        break;
     }
     return result;
   }
@@ -951,10 +951,10 @@
       const width = element.scrollWidth - element.clientWidth;
 
       switch (dir) {
-      case 'left': return (winScrollX === 0);
-      case 'right': return (Math.abs(winScrollX - width) <= 1);
-      case 'up': return (winScrollY === 0);
-      case 'down': return (Math.abs(winScrollY - height) <= 1);
+        case 'left': return (winScrollX === 0);
+        case 'right': return (Math.abs(winScrollX - width) <= 1);
+        case 'up': return (winScrollY === 0);
+        case 'down': return (Math.abs(winScrollY - height) <= 1);
       }
     }
     return false;
@@ -977,9 +977,9 @@
     } else {
       scrollerRect = new DOMRect(0, 0, window.innerWidth, window.innerHeight);
     }
-   
+
     if (isInside(scrollerRect, elementRect, 'left') && isInside(scrollerRect, elementRect, 'down'))
-      return true; 
+      return true;
     else
       return false;
   }
@@ -1060,7 +1060,7 @@
     if (!isVisibleStyleProperty(element.parentElement))
       return false;
     if (!isVisibleStyleProperty(element) || (element.style.opacity === '0') ||
-        (window.getComputedStyle(element).height === '0px' || window.getComputedStyle(element).width === '0px'))
+      (window.getComputedStyle(element).height === '0px' || window.getComputedStyle(element).width === '0px'))
       return false;
     return true;
   }
@@ -1119,7 +1119,7 @@
   function hitTest(element) {
     const elementRect = getBoundingClientRect(element);
     if (element.nodeName !== 'IFRAME' && (elementRect.top < 0 || elementRect.left < 0 ||
-      elementRect.top > element.ownerDocument.documentElement.clientHeight || elementRect.left >element.ownerDocument.documentElement.clientWidth))
+      elementRect.top > element.ownerDocument.documentElement.clientHeight || elementRect.left > element.ownerDocument.documentElement.clientWidth))
       return false;
 
     let offsetX = parseInt(element.offsetWidth) / 10;
@@ -1135,7 +1135,7 @@
       rightBottom: [elementRect.right - offsetX, elementRect.bottom - offsetY]
     };
 
-    for(const point in hitTestPoint) {
+    for (const point in hitTestPoint) {
       const elemFromPoint = element.ownerDocument.elementFromPoint(...hitTestPoint[point]);
       if (element === elemFromPoint || element.contains(elemFromPoint)) {
         return true;
@@ -1152,10 +1152,10 @@
    * @returns {boolean}
    */
   function isInside(containerRect, childRect) {
-    const rightEdgeCheck = (containerRect.left <= childRect.right && containerRect.right >= childRect.right);
-    const leftEdgeCheck = (containerRect.left <= childRect.left && containerRect.right >= childRect.left);
-    const topEdgeCheck = (containerRect.top <= childRect.top && containerRect.bottom >= childRect.top);
-    const bottomEdgeCheck = (containerRect.top <= childRect.bottom && containerRect.bottom >= childRect.bottom);
+    const rightEdgeCheck = (containerRect.left < childRect.right && containerRect.right >= childRect.right);
+    const leftEdgeCheck = (containerRect.left <= childRect.left && containerRect.right > childRect.left);
+    const topEdgeCheck = (containerRect.top <= childRect.top && containerRect.bottom > childRect.top);
+    const bottomEdgeCheck = (containerRect.top < childRect.bottom && containerRect.bottom >= childRect.bottom);
     return (rightEdgeCheck || leftEdgeCheck) && (topEdgeCheck || bottomEdgeCheck);
   }
 
@@ -1170,16 +1170,16 @@
    */
   function isOutside(rect1, rect2, dir) {
     switch (dir) {
-    case 'left':
-      return isRightSide(rect2, rect1);
-    case 'right':
-      return isRightSide(rect1, rect2);
-    case 'up':
-      return isBelow(rect2, rect1);
-    case 'down':
-      return isBelow(rect1, rect2);
-    default:
-      return false;
+      case 'left':
+        return isRightSide(rect2, rect1);
+      case 'right':
+        return isRightSide(rect1, rect2);
+      case 'up':
+        return isBelow(rect2, rect1);
+      case 'down':
+        return isBelow(rect1, rect2);
+      default:
+        return false;
     }
   }
 
@@ -1196,16 +1196,16 @@
   /* rect1 is completely aligned or partially aligned for the direction */
   function isAligned(rect1, rect2, dir) {
     switch (dir) {
-    case 'left' :
+      case 'left':
       /* falls through */
-    case 'right' :
-      return rect1.bottom > rect2.top && rect1.top < rect2.bottom;
-    case 'up' :
+      case 'right':
+        return rect1.bottom > rect2.top && rect1.top < rect2.bottom;
+      case 'up':
       /* falls through */
-    case 'down' :
-      return rect1.right > rect2.left && rect1.left < rect2.right;
-    default:
-      return false;
+      case 'down':
+        return rect1.right > rect2.left && rect1.left < rect2.right;
+      default:
+        return false;
     }
   }
 
@@ -1242,7 +1242,7 @@
    * @returns {Number} The euclidean distance between the spatial navigation container and an element inside it
    */
   function getInnerDistance(rect1, rect2, dir) {
-    const baseEdgeForEachDirection = {left: 'right', right: 'left', up: 'bottom', down: 'top'};
+    const baseEdgeForEachDirection = { left: 'right', right: 'left', up: 'bottom', down: 'top' };
     const baseEdge = baseEdgeForEachDirection[dir];
 
     return Math.abs(rect1[baseEdge] - rect2[baseEdge]);
@@ -1285,38 +1285,38 @@
     const D = intersectionRect.area;
 
     switch (dir) {
-    case 'left':
+      case 'left':
       /* falls through */
-    case 'right' :
-      // If two elements are aligned, add align bias
-      // else, add orthogonal bias
-      if (isAligned(searchOrigin, candidateRect, dir))
-        alignBias = Math.min(intersectionRect.height / searchOrigin.height , 1);
-      else
-        orthogonalBias = (searchOrigin.height / 2);
+      case 'right':
+        // If two elements are aligned, add align bias
+        // else, add orthogonal bias
+        if (isAligned(searchOrigin, candidateRect, dir))
+          alignBias = Math.min(intersectionRect.height / searchOrigin.height, 1);
+        else
+          orthogonalBias = (searchOrigin.height / 2);
 
-      B = (P2 + orthogonalBias) * kOrthogonalWeightForLeftRight;
-      C = alignWeight * alignBias;
-      break;
+        B = (P2 + orthogonalBias) * kOrthogonalWeightForLeftRight;
+        C = alignWeight * alignBias;
+        break;
 
-    case 'up' :
+      case 'up':
       /* falls through */
-    case 'down' :
-      // If two elements are aligned, add align bias
-      // else, add orthogonal bias
-      if (isAligned(searchOrigin, candidateRect, dir))
-        alignBias = Math.min(intersectionRect.width / searchOrigin.width , 1);
-      else
-        orthogonalBias = (searchOrigin.width / 2);
+      case 'down':
+        // If two elements are aligned, add align bias
+        // else, add orthogonal bias
+        if (isAligned(searchOrigin, candidateRect, dir))
+          alignBias = Math.min(intersectionRect.width / searchOrigin.width, 1);
+        else
+          orthogonalBias = (searchOrigin.width / 2);
 
-      B = (P1 + orthogonalBias) * kOrthogonalWeightForUpDown;
-      C = alignWeight * alignBias;
-      break;
+        B = (P1 + orthogonalBias) * kOrthogonalWeightForUpDown;
+        C = alignWeight * alignBias;
+        break;
 
-    default:
-      B = 0;
-      C = 0;
-      break;
+      default:
+        B = 0;
+        C = 0;
+        break;
     }
 
     return (A + B - C - D);
@@ -1375,101 +1375,101 @@
      * @property {Point} Points.entryPoint
      * @property {Point} Points.exitPoint
      */
-    const points = {entryPoint: {x: 0, y: 0}, exitPoint:{x: 0, y: 0}};
+    const points = { entryPoint: { x: 0, y: 0 }, exitPoint: { x: 0, y: 0 } };
 
     if (startingPoint) {
       points.exitPoint = searchOrigin;
 
       switch (dir) {
-      case 'left':
-        points.entryPoint.x = candidateRect.right;
-        break;
-      case 'up':
-        points.entryPoint.y = candidateRect.bottom;
-        break;
-      case 'right':
-        points.entryPoint.x = candidateRect.left;
-        break;
-      case 'down':
-        points.entryPoint.y = candidateRect.top;
-        break;
+        case 'left':
+          points.entryPoint.x = candidateRect.right;
+          break;
+        case 'up':
+          points.entryPoint.y = candidateRect.bottom;
+          break;
+        case 'right':
+          points.entryPoint.x = candidateRect.left;
+          break;
+        case 'down':
+          points.entryPoint.y = candidateRect.top;
+          break;
       }
 
       // Set orthogonal direction
       switch (dir) {
-      case 'left':
-      case 'right':
-        if (startingPoint.y <= candidateRect.top) {
-          points.entryPoint.y = candidateRect.top;
-        } else if (startingPoint.y < candidateRect.bottom) {
-          points.entryPoint.y = startingPoint.y;
-        } else {
-          points.entryPoint.y = candidateRect.bottom;
-        }
-        break;
+        case 'left':
+        case 'right':
+          if (startingPoint.y <= candidateRect.top) {
+            points.entryPoint.y = candidateRect.top;
+          } else if (startingPoint.y < candidateRect.bottom) {
+            points.entryPoint.y = startingPoint.y;
+          } else {
+            points.entryPoint.y = candidateRect.bottom;
+          }
+          break;
 
-      case 'up':
-      case 'down':
-        if (startingPoint.x <= candidateRect.left) {
-          points.entryPoint.x = candidateRect.left;
-        } else if (startingPoint.x < candidateRect.right) {
-          points.entryPoint.x = startingPoint.x;
-        } else {
-          points.entryPoint.x = candidateRect.right;
-        }
-        break;
+        case 'up':
+        case 'down':
+          if (startingPoint.x <= candidateRect.left) {
+            points.entryPoint.x = candidateRect.left;
+          } else if (startingPoint.x < candidateRect.right) {
+            points.entryPoint.x = startingPoint.x;
+          } else {
+            points.entryPoint.x = candidateRect.right;
+          }
+          break;
       }
     }
     else {
       // Set direction
       switch (dir) {
-      case 'left':
-        points.exitPoint.x = searchOrigin.left;
-        points.entryPoint.x = (candidateRect.right < searchOrigin.left) ? candidateRect.right : searchOrigin.left;
-        break;
-      case 'up':
-        points.exitPoint.y = searchOrigin.top;
-        points.entryPoint.y = (candidateRect.bottom < searchOrigin.top) ? candidateRect.bottom : searchOrigin.top;
-        break;
-      case 'right':
-        points.exitPoint.x = searchOrigin.right;
-        points.entryPoint.x = (candidateRect.left > searchOrigin.right) ? candidateRect.left : searchOrigin.right;
-        break;
-      case 'down':
-        points.exitPoint.y = searchOrigin.bottom;
-        points.entryPoint.y = (candidateRect.top > searchOrigin.bottom) ? candidateRect.top : searchOrigin.bottom;
-        break;
+        case 'left':
+          points.exitPoint.x = searchOrigin.left;
+          points.entryPoint.x = (candidateRect.right < searchOrigin.left) ? candidateRect.right : searchOrigin.left;
+          break;
+        case 'up':
+          points.exitPoint.y = searchOrigin.top;
+          points.entryPoint.y = (candidateRect.bottom < searchOrigin.top) ? candidateRect.bottom : searchOrigin.top;
+          break;
+        case 'right':
+          points.exitPoint.x = searchOrigin.right;
+          points.entryPoint.x = (candidateRect.left > searchOrigin.right) ? candidateRect.left : searchOrigin.right;
+          break;
+        case 'down':
+          points.exitPoint.y = searchOrigin.bottom;
+          points.entryPoint.y = (candidateRect.top > searchOrigin.bottom) ? candidateRect.top : searchOrigin.bottom;
+          break;
       }
 
       // Set orthogonal direction
       switch (dir) {
-      case 'left':
-      case 'right':
-        if (isBelow(searchOrigin, candidateRect)) {
-          points.exitPoint.y = searchOrigin.top;
-          points.entryPoint.y = (candidateRect.bottom < searchOrigin.top) ? candidateRect.bottom : searchOrigin.top;
-        } else if (isBelow(candidateRect, searchOrigin)) {
-          points.exitPoint.y = searchOrigin.bottom;
-          points.entryPoint.y = (candidateRect.top > searchOrigin.bottom) ? candidateRect.top : searchOrigin.bottom;
-        } else {
-          points.exitPoint.y = Math.max(searchOrigin.top, candidateRect.top);
-          points.entryPoint.y = points.exitPoint.y;
-        }
-        break;
+        case 'left':
+        case 'right':
+          if (isBelow(searchOrigin, candidateRect)) {
+            points.exitPoint.y = searchOrigin.top;
+            points.entryPoint.y = (candidateRect.bottom < searchOrigin.top) ? candidateRect.bottom : searchOrigin.top;
+          } else if (isBelow(candidateRect, searchOrigin)) {
+            points.exitPoint.y = searchOrigin.bottom;
+            points.entryPoint.y = (candidateRect.top > searchOrigin.bottom) ? candidateRect.top : searchOrigin.bottom;
+          } else {
+            points.exitPoint.y = Math.max(searchOrigin.top, candidateRect.top);
+            points.entryPoint.y = points.exitPoint.y;
+          }
+          break;
 
-      case 'up':
-      case 'down':
-        if (isRightSide(searchOrigin, candidateRect)) {
-          points.exitPoint.x = searchOrigin.left;
-          points.entryPoint.x = (candidateRect.right < searchOrigin.left) ? candidateRect.right : searchOrigin.left;
-        } else if (isRightSide(candidateRect, searchOrigin)) {
-          points.exitPoint.x = searchOrigin.right;
-          points.entryPoint.x = (candidateRect.left > searchOrigin.right) ? candidateRect.left : searchOrigin.right;
-        } else {
-          points.exitPoint.x = Math.max(searchOrigin.left, candidateRect.left);
-          points.entryPoint.x = points.exitPoint.x;
-        }
-        break;
+        case 'up':
+        case 'down':
+          if (isRightSide(searchOrigin, candidateRect)) {
+            points.exitPoint.x = searchOrigin.left;
+            points.entryPoint.x = (candidateRect.right < searchOrigin.left) ? candidateRect.right : searchOrigin.left;
+          } else if (isRightSide(candidateRect, searchOrigin)) {
+            points.exitPoint.x = searchOrigin.right;
+            points.entryPoint.x = (candidateRect.left > searchOrigin.right) ? candidateRect.left : searchOrigin.right;
+          } else {
+            points.exitPoint.x = Math.max(searchOrigin.left, candidateRect.left);
+            points.entryPoint.x = points.exitPoint.x;
+          }
+          break;
       }
     }
 
@@ -1489,7 +1489,7 @@
    * @property {Number} IntersectionArea.height
    */
   function getIntersectionRect(rect1, rect2) {
-    const intersection_rect = {width: 0, height: 0, area: 0};
+    const intersection_rect = { width: 0, height: 0, area: 0 };
 
     const new_location = [Math.max(rect1.left, rect2.left), Math.max(rect1.top, rect2.top)];
     const new_max_point = [Math.min(rect1.right, rect2.right), Math.min(rect1.bottom, rect2.bottom)];
@@ -1516,7 +1516,9 @@
     const SPINNABLE_INPUT_TYPES = ['email', 'date', 'month', 'number', 'time', 'week'],
       TEXT_INPUT_TYPES = ['password', 'text', 'search', 'tel', 'url', null];
     const eventTarget = document.activeElement;
-    const focusNavigableArrowKey = {left: false, up: false, right: false, down: false};
+    const startPosition = eventTarget.selectionStart;
+    const endPosition = eventTarget.selectionEnd;
+    const focusNavigableArrowKey = { left: false, up: false, right: false, down: false };
 
     const dir = ARROW_KEY_CODE[e.keyCode];
     if (dir === undefined) {
@@ -1527,9 +1529,6 @@
       (dir === 'up' || dir === 'down')) {
       focusNavigableArrowKey[dir] = true;
     } else if (TEXT_INPUT_TYPES.includes(eventTarget.getAttribute('type')) || eventTarget.nodeName === 'TEXTAREA') {
-      // 20210606 fix selectionStart unavailable on checkboxes ~inf
-      const startPosition = eventTarget.selectionStart;
-      const endPosition = eventTarget.selectionEnd;
       if (startPosition === endPosition) { // if there isn't any selected text
         if (startPosition === 0) {
           focusNavigableArrowKey.left = true;
@@ -1576,7 +1575,7 @@
    * @param {Node} targetElement
    * @returns {sequence<Node>}  overlappedCandidates
    */
-  function getOverlappedCandidates(targetElement) {      
+  function getOverlappedCandidates(targetElement) {
     const container = targetElement.getSpatialNavigationContainer();
     const candidates = container.focusableAreas();
     const overlappedCandidates = [];
@@ -1597,7 +1596,7 @@
   function getExperimentalAPI() {
     function canScroll(container, dir) {
       return (isScrollable(container, dir) && !isScrollBoundary(container, dir)) ||
-             (!container.parentElement && !isHTMLScrollBoundary(container, dir));
+        (!container.parentElement && !isHTMLScrollBoundary(container, dir));
     }
 
     function findTarget(findCandidate, element, dir, option) {
@@ -1621,7 +1620,7 @@
 
         // 5-2
         if (Array.isArray(candidates) && candidates.length > 0) {
-          return findCandidate ? getFilteredSpatialNavigationCandidates(eventTarget, dir, candidates) : eventTarget.spatialNavigationSearch(dir, {candidates});
+          return findCandidate ? getFilteredSpatialNavigationCandidates(eventTarget, dir, candidates) : eventTarget.spatialNavigationSearch(dir, { candidates });
         }
         if (canScroll(eventTarget, dir)) {
           return findCandidate ? [] : eventTarget;
@@ -1634,7 +1633,7 @@
       let parentContainer = (container.parentElement) ? container.getSpatialNavigationContainer() : null;
 
       // When the container is the viewport of a browsing context
-      if (!parentContainer && ( window.location !== window.parent.location)) {
+      if (!parentContainer && (window.location !== window.parent.location)) {
         parentContainer = window.parent.document.documentElement;
       }
 
@@ -1643,7 +1642,7 @@
         const candidates = filteredCandidates(eventTarget, getSpatialNavigationCandidates(container, option), dir, container);
 
         if (Array.isArray(candidates) && candidates.length > 0) {
-          bestNextTarget = eventTarget.spatialNavigationSearch(dir, {candidates, container});
+          bestNextTarget = eventTarget.spatialNavigationSearch(dir, { candidates, container });
           if (bestNextTarget) {
             return findCandidate ? candidates : bestNextTarget;
           }
@@ -1658,7 +1657,7 @@
           container = window.document.documentElement;
 
           // The page is in an iframe
-          if ( window.location !== window.parent.location ) {
+          if (window.location !== window.parent.location) {
             // eventTarget needs to be reset because the position of the element in the IFRAME
             // is unuseful when the focus moves out of the iframe
             eventTarget = window.frameElement;
@@ -1692,7 +1691,7 @@
 
         // 9
         if (Array.isArray(candidates) && candidates.length > 0) {
-          bestNextTarget = eventTarget.spatialNavigationSearch(dir, {candidates, container});
+          bestNextTarget = eventTarget.spatialNavigationSearch(dir, { candidates, container });
           if (bestNextTarget) {
             return findCandidate ? candidates : bestNextTarget;
           }
@@ -1727,7 +1726,7 @@
    * @function enableExperimentalAPIs
    * @param option {boolean} - If it is true, the experimental APIs can be used or it cannot.
    */
-  function enableExperimentalAPIs (option) {
+  function enableExperimentalAPIs(option) {
     const currentKeyMode = window.__spatialNavigation__ && window.__spatialNavigation__.keyMode;
     window.__spatialNavigation__ = (option === false) ? getInitialAPIs() : Object.assign(getInitialAPIs(), getExperimentalAPI());
     window.__spatialNavigation__.keyMode = currentKeyMode;
@@ -1743,13 +1742,13 @@
       enableExperimentalAPIs,
       get keyMode() { return this._keymode ? this._keymode : 'ARROW'; },
       set keyMode(mode) { this._keymode = (['SHIFTARROW', 'ARROW', 'NONE'].includes(mode)) ? mode : 'ARROW'; },
-      setStartingPoint: function (x, y) {startingPoint = (x && y) ? {x, y} : null;}
+      setStartingPoint: function (x, y) { startingPoint = (x && y) ? { x, y } : null; }
     };
   }
 
   initiateSpatialNavigation();
   enableExperimentalAPIs(false);
-  
+
   window.addEventListener('load', () => {
     spatialNavigationHandler();
   });
