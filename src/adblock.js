@@ -25,35 +25,31 @@ JSON.parse = function () {
         ?.sectionListRenderer?.contents &&
       configRead('enableAdBlock')
     ) {
-      r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.content.sectionListRenderer.contents =
-        r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.content.sectionListRenderer.contents
-          .filter((elm) => !elm.tvMastheadRenderer)
-          .map((elm) => {
-            // Drop recommended video tiles
-            if (elm?.shelfRenderer?.content?.horizontalListRenderer?.items) {
-              elm.shelfRenderer.content.horizontalListRenderer.items =
-                elm.shelfRenderer.content.horizontalListRenderer.items.filter(
-                  (item) =>
-                    item.tileRenderer.contentType &&
-                    (!item?.tileRenderer?.metadata?.tileMetadataRenderer
-                      ?.lines ||
-                      !item?.tileRenderer?.metadata?.tileMetadataRenderer
-                        ?.lines[0]?.lineRenderer?.items ||
-                      item?.tileRenderer?.metadata?.tileMetadataRenderer?.lines[0]
-                        ?.lineRenderer?.items[0]?.lineItemRenderer?.badge
-                        ?.metadataBadgeRenderer?.style !== 'BADGE_STYLE_TYPE_AD')
-                );
-            }
+      // remove masthead
+      let sectionContents = r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.content.sectionListRenderer.contents;
+      sectionContents = sectionContents.filter(
+        (elm) => !elm.tvMastheadRenderer
+      );
 
-            return elm;
-          });
+      // drop "autoplay" ad tile from home screen
+      let replacementSections = [];
+      for (let i = 0; i < sectionContents.length; ++i) {
+        let section = sectionContents[i];
+        let replacementItems = [];
+        let items = section.shelfRenderer.content.horizontalListRenderer.items;
+        for (let i = 0; i < items.length; ++i) {
+          let item = items[i];
+          // remove ad slot
+          if ("adSlotRenderer" in item) {
+            continue
+          }
+          replacementItems.push(item);
+        }
+        section.shelfRenderer.content.horizontalListRenderer.items = replacementItems;
+        replacementSections.push(section);
+      }
+      r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.content.sectionListRenderer.contents = replacementSections;
     }
-  } catch (err) {
-    console.warn(
-      'adblock: an error occured during JSON.parse processing:',
-      err
-    );
-  }
 
-  return r;
-};
+    return r;
+  };
