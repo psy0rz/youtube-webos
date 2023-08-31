@@ -50,6 +50,12 @@ JSON.parse = function () {
       }
       r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.content.sectionListRenderer.contents = replacementSections;
     }
+  } catch (err) {
+    console.warn(
+      'adblock: an error occured during JSON.parse processing:',
+      err
+    );
+  }
 
-    return r;
-  };
+  return r;
+};
